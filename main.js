@@ -32,7 +32,7 @@ function detectShuttle(context, width, height) {
     const y = Math.floor((i / 4) / width); // ピクセルのY座標
 
     // 白色のピクセルを検出
-    if (r > 200 && g > 200 && b > 200) {
+    if (g > 150 && r > 150 && b < 100) {
       detected = true;
       yPositionSum += y;
       whitePixelCount++;
@@ -54,6 +54,9 @@ function processFrame() {
   if (shuttleDetected) {
     if (shuttleYPosition > groundThreshold) {
       message.textContent = "シャトルが床に着地しました！";
+      const imageDataURL = canvas.toDataURL();
+      shuttleImage.src = imageDataURL;
+      shuttleImage.style.displya = 'block'
     } else {
       message.textContent = "シャトルが見つかりました！";
     }
