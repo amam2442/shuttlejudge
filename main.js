@@ -1,6 +1,11 @@
 const video = document.getElementById('video');
 const canvas = document.getElementById('canvas');
 const context = canvas.getContext('2d');
+const message = document.getElementById('message');
+
+let shuttleDetected = false;
+let shuttleYPosition = 0;
+const groundThreshold = 440; // 床の位置の閾値（適宜調整）
 
 // Webカメラの映像を取得
 navigator.mediaDevices.getUserMedia({ video: true })
@@ -16,31 +21,44 @@ function detectShuttle(context, width, height) {
   const imageData = context.getImageData(0, 0, width, height);
   const data = imageData.data;
   const threshold = 50;
-  let shuttleDetected = false;
+  let detected = false;
+  let yPositionSum = 0;
+  let whitePixelCount = 0;
 
   for (let i = 0; i < data.length; i += 4) {
     const r = data[i];
     const g = data[i + 1];
     const b = data[i + 2];
+    const y = Math.floor((i / 4) / width); // ピクセルのY座標
 
     // 白色のピクセルを検出
     if (r > 200 && g > 200 && b > 200) {
-      // シャトルの特徴を持つ領域を確認
-      shuttleDetected = true;
-      break;
+      detected = true;
+      yPositionSum += y;
+      whitePixelCount++;
     }
   }
 
-  return shuttleDetected;
+  if (detected && whitePixelCount > 0) {
+    shuttleYPosition = yPositionSum / whitePixelCount;
+  }
+
+  return detected;
 }
 
 // 定期的にフレームをキャプチャして解析
 function processFrame() {
   context.drawImage(video, 0, 0, canvas.width, canvas.height);
-  if (detectShuttle(context, canvas.width, canvas.height)) {
-    console.log("シャトルが見つかりました！");
+  shuttleDetected = detectShuttle(context, canvas.width, canvas.height);
+
+  if (shuttleDetected) {
+    if (shuttleYPosition > groundThreshold) {
+      message.textContent = "シャトルが床に着地しました！";
+    } else {
+      message.textContent = "シャトルが見つかりました！";
+    }
   } else {
-    console.log("シャトルは見つかりませんでした。");
+    message.textContent = "";
   }
   requestAnimationFrame(processFrame);
 }
