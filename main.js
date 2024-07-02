@@ -2,6 +2,7 @@ const video = document.getElementById('video');
 const canvas = document.getElementById('canvas');
 const context = canvas.getContext('2d');
 const message = document.getElementById('message');
+const shuttleImage = document.getElementById('shuttleImage');
 
 let shuttleDetected = false;
 let shuttleYPosition = 0;
@@ -32,7 +33,7 @@ function detectShuttle(context, width, height) {
     const y = Math.floor((i / 4) / width); // ピクセルのY座標
 
     // 白色のピクセルを検出
-    if (g > 150 && r > 150 && b < 100) {
+    if (b > 150 && r < 100 && g < 100) {
       detected = true;
       yPositionSum += y;
       whitePixelCount++;
@@ -56,7 +57,7 @@ function processFrame() {
       message.textContent = "シャトルが床に着地しました！";
       const imageDataURL = canvas.toDataURL();
       shuttleImage.src = imageDataURL;
-      shuttleImage.style.displya = 'block'
+      shuttleImage.style.display = 'block'
     } else {
       message.textContent = "シャトルが見つかりました！";
     }
