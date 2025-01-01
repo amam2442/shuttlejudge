@@ -8,16 +8,11 @@
 </head>
 
 <body>
-  <video id="video" width="250" height="400" autoplay></video>
-  <canvas id="canvas" width="640" height="480" style="display:none;"></canvas>
-  <div id="message"></div>
-  <div>
-    <p>録画された動画:</p>
-    <video id="playbackVideo1" controls style="display:none;"></video>
-    <video id="playbackVideo2" controls style="display:none;"></video>
-    <video id="playbackVideo3" controls style="display:none;"></video>
-  </div>
   <script src="main.js"></script>
+  <div><video id="myVideo" autoplay="1"></video></div>
+  <div><button type="button" onclick="videoStart()">撮影</button>　
+    <button type="button" onclick="videoStop()">停止</button>
+  </div>
 </body>
 
 </html>
