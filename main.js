@@ -13,12 +13,14 @@ let cooldown = false; // クールダウンタイムのフラグ
 
 // ページ読み込み後、一定時間（5秒間）動き検知をスキップ
 const detectionDelay = 3000; // 動き検知の遅延時間（ミリ秒）
-setTimeout(() => {
-  skipMotionDetection = false; // 動き検知を有効化
-}, detectionDelay);
+
 
 // カメラ映像を取得して<video>に表示
 async function startCamera() {
+  setTimeout(() => {
+    skipMotionDetection = false; // 動き検知を有効化
+  }, detectionDelay);
+
   try {
     const stream = await navigator.mediaDevices.getUserMedia({
       video: { facingMode: 'environment' },
@@ -134,11 +136,14 @@ function stopRecording() {
 }
 
 playButton.addEventListener('click', () => {
+  // カメラを起動し、動画を表示
+  startCamera();
+
+  // 動画を再生
   video.play().catch(error => {
     console.error("動画の再生エラー:", error);
   });
-  playButton.style.display = 'none'; // ボタンを非表示にする
-});
 
-// カメラ起動
-startCamera();
+  // ボタンを非表示にする
+  playButton.style.display = 'none';
+});
