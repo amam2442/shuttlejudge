@@ -8,14 +8,18 @@ const motionThreshold = 10000000; // 動き検知の閾値（調整可能）
 const recordingBuffer = []; // 録画バッファ
 let recorder = null; // MediaRecorderのインスタンス
 let isRecording = false;
-let skipMotionDetection = false;
-let cooldown = false;
+let skipMotionDetection = true; // 動き検知をスキップするフラグ（初期値はtrue）
+let cooldown = false; // クールダウンタイムのフラグ
 
+// ページ読み込み後、一定時間（5秒間）動き検知をスキップ
+const detectionDelay = 3000; // 動き検知の遅延時間（ミリ秒）
+setTimeout(() => {
+  skipMotionDetection = false; // 動き検知を有効化
+}, detectionDelay);
 
 // カメラ映像を取得して<video>に表示
 async function startCamera() {
   try {
-    // スマホのリアカメラを使用
     const stream = await navigator.mediaDevices.getUserMedia({
       video: { facingMode: 'environment' },
       audio: false,
@@ -26,8 +30,6 @@ async function startCamera() {
     // MediaRecorderを初期化
     initRecorder(stream);
 
-
-    // 動画メタデータがロードされたら<canvas>のサイズを設定
     video.onloadedmetadata = () => {
       video.play();
       canvas.width = video.videoWidth;
@@ -38,6 +40,7 @@ async function startCamera() {
     console.error('カメラのアクセスに失敗しました:', err);
   }
 }
+
 // MediaRecorderの初期化
 function initRecorder(stream) {
   recorder = new MediaRecorder(stream);
@@ -48,19 +51,13 @@ function initRecorder(stream) {
   };
 
   recorder.onstop = () => {
-    console.log("録画終了");
-    if (recordingBuffer.length > 0) {
-      const recordedBlob = new Blob(recordingBuffer, { type: 'video/webm' });
-      console.log("録画データ作成完了", recordedBlob);
-
-      // 再生用ビデオに設定
-      const playback = document.getElementById('playback');
-      playback.src = URL.createObjectURL(recordedBlob);
-      playback.style.display = 'block'; // 再生用ビデオを表示
-    }
+    const recordedBlob = new Blob(recordingBuffer, { type: 'video/webm' });
+    playback.src = URL.createObjectURL(recordedBlob);
+    playback.style.display = 'block'; // 再生用ビデオを表示
     recordingBuffer.length = 0; // バッファをクリア
   };
 }
+
 // 動きの検知
 function detectMotion(currentFrame) {
   if (!prevFrame) {
@@ -108,24 +105,20 @@ function processFrame() {
   requestAnimationFrame(processFrame);
 }
 
-
 // 録画を開始
 function startRecording() {
   isRecording = true;
-  skipMotionDetection = true; // 動き検知をスキップ
+  skipMotionDetection = true; // 動き検知を停止
   recorder.start();
-  console.log("録画を開始しました");
 
-  // 3秒間録画
   setTimeout(() => {
     stopRecording();
-  }, 3000);
+  }, 5000); // 録画時間を設定
 }
 
 // 録画を停止
 function stopRecording() {
   if (isRecording) {
-    console.log("録画を停止しました")
     isRecording = false;
     recorder.stop();
     cooldown = true; // クールダウンを開始
@@ -137,7 +130,6 @@ function stopRecording() {
     }, 5000); // クールダウン時間（5秒）
   }
 }
-
 
 // カメラ起動
 startCamera();
