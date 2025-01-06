@@ -133,5 +133,12 @@ function stopRecording() {
   }
 }
 
+playButton.addEventListener('click', () => {
+  video.play().catch(error => {
+    console.error("動画の再生エラー:", error);
+  });
+  playButton.style.display = 'none'; // ボタンを非表示にする
+});
+
 // カメラ起動
 startCamera();
