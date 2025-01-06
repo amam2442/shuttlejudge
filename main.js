@@ -31,7 +31,9 @@ async function startCamera() {
     initRecorder(stream);
 
     video.onloadedmetadata = () => {
-      video.play();
+      video.play().catch(error => {
+        console.error("動画の再生エラー:", error);
+      });
       canvas.width = video.videoWidth;
       canvas.height = video.videoHeight;
       processFrame();
