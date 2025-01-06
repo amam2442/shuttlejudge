@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>スマホカメラ映像をCanvasに表示</title>
+  <title>ラインジャッチyukisoejima</title>
 
 
   <style>
@@ -28,12 +28,19 @@
       color: red;
       font-weight: bold;
     }
+
+    video {
+      width: 320px;
+      height: auto;
+      margin: 10px 0;
+    }
   </style>
 </head>
 
 <body>
   <video id="video" autoplay playsinline style="display: none;"></video>
-  <canvas id="canvas"></canvas>
+  <canvas id="canvas" style="display:none;"></canvas>
+  <video id="playback" controls style="display:none;"></video>
   <div id="message"></div>
   <script src="main.js"></script>
 </body>
